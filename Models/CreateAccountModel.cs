@@ -2,7 +2,7 @@
 
 namespace Backend_Dis_App.Models
 {
-    public class NewAccountModel
+    public class CreateAccountModel
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }

@@ -10,7 +10,7 @@ namespace Backend_Dis_App.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/")]
     public class UsersController : BaseController
     {
         private readonly IUserService _userService;
@@ -28,6 +28,7 @@ namespace Backend_Dis_App.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("login")]
         public IActionResult LoginIntoAccount([FromBody] LoginModel loginModel)
         {
             var isValid = true;
@@ -45,6 +46,33 @@ namespace Backend_Dis_App.Controllers
                 return Ok(loginModel);
             else
                 return BadRequest(ErrorMessage);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("forgot")]
+        public IActionResult ForgotPassword([FromBody] ForgotPasswordModel forgotPasswordModel)
+        {
+            if (!_emailValidator.CheckRule(forgotPasswordModel.EmailAddress))
+            {
+                ErrorMessage = "*Email invalid format.";
+                return BadRequest(ErrorMessage);
+            }
+            return Ok("Email has been sent");
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("create")]
+        public IActionResult CreateAccount([FromBody] CreateAccountModel createAccountModel)
+        {
+            if (string.IsNullOrWhiteSpace(createAccountModel.FirstName)|| string.IsNullOrWhiteSpace(createAccountModel.LastName)
+                || string.IsNullOrWhiteSpace(createAccountModel.EmailAddress)|| string.IsNullOrWhiteSpace(createAccountModel.Password))
+            {
+                ErrorMessage = "*Please fill all required fields.";
+                return BadRequest(ErrorMessage);
+            }
+            return Ok("Account created.");
         }
     }
 }

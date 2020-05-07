@@ -5,7 +5,7 @@ namespace Backend_Dis_App.Services.Interfaces
     public interface IUserService
     {
         bool Login(LoginModel loginModel);
-        void CreateAccount(NewAccountModel newAccountModel);
+        void CreateAccount(CreateAccountModel newAccountModel);
         bool LogOut();
         void ForgotPassword(long id);
     }
