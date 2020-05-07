@@ -1,0 +1,39 @@
+﻿<Properties StartupConfiguration="{45CE2E9B-1D19-4B56-B461-16AEFF434D1E}|Default">
+  <MonoDevelop.Ide.ItemProperties.Backend-Dis-App PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Models/LoginModel.cs">
+    <Files>
+      <File FileName="BaseClasses/BaseController.cs" Line="1" Column="1" />
+      <File FileName="Controllers/UsersController.cs" Line="25" Column="1" />
+      <File FileName="Services/Implementation/UserService.cs" Line="24" Column="71" />
+      <File FileName="Services/Interfaces/IUserService.cs" Line="7" Column="16" />
+      <File FileName="Models/LoginModel.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Backend-Dis-App" expanded="True">
+            <Node name="Backend-Dis-App" expanded="True">
+              <Node name="BaseClasses" expanded="True" />
+              <Node name="Controllers" expanded="True" />
+              <Node name="Models" expanded="True">
+                <Node name="LoginModel.cs" selected="True" />
+              </Node>
+              <Node name="Properties" expanded="True" />
+              <Node name="Services" expanded="True">
+                <Node name="Implementation" expanded="True" />
+                <Node name="Interfaces" expanded="True" />
+              </Node>
+              <Node name="appsettings.json" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
