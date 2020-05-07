@@ -1,15 +1,23 @@
 ﻿<Properties StartupConfiguration="{45CE2E9B-1D19-4B56-B461-16AEFF434D1E}|Default">
   <MonoDevelop.Ide.ItemProperties.Backend-Dis-App PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workbench ActiveDocument=".gitignore">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/UsersController.cs">
     <Files>
-      <File FileName=".gitignore" Line="37" Column="5" />
+      <File FileName="Controllers/UsersController.cs" Line="36" Column="52" />
+      <File FileName="Validators/EmailValidator.cs" Line="8" Column="9" />
+      <File FileName="Validators/IEmailValidator.cs" Line="6" Column="42" />
+      <File FileName="Validators/PasswordValidator.cs" Line="8" Column="93" />
+      <File FileName="Validators/IPasswordValidator.cs" Line="4" Column="40" />
+      <File FileName="Startup.cs" Line="44" Column="55" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Backend-Dis-App" expanded="True">
             <Node name="Backend-Dis-App" expanded="True">
-              <Node name=".gitignore" selected="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="UsersController.cs" selected="True" />
+              </Node>
+              <Node name="Validators" expanded="True" />
             </Node>
           </Node>
         </State>
