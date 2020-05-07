@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Backend_Dis_App.Services.Implementation;
 using Backend_Dis_App.Services.Interfaces;
+using Backend_Dis_App.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,6 +40,8 @@ namespace Backend_Dis_App
             });
 
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IEmailValidator, EmailValidator>();
+            services.AddSingleton<IPasswordValidator, PasswordValidator>();
 
             services.AddControllers();
         }

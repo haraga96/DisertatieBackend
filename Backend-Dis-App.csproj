@@ -12,5 +12,6 @@
     <Folder Include="Services\Implementation\" />
     <Folder Include="Models\" />
     <Folder Include="BaseClasses\" />
+    <Folder Include="Validators\" />
   </ItemGroup>
 </Project>
