@@ -1,4 +1,5 @@
-﻿using Backend_Dis_App.Models;
+﻿using Backend_Dis_App.Database;
+using Backend_Dis_App.Models;
 
 namespace Backend_Dis_App.Services.Interfaces
 {
