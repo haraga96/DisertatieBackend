@@ -29,21 +29,21 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public IActionResult LoginIntoAccount([FromBody] LoginModel loginModel)
+        public IActionResult LoginIntoAccount([FromBody] LoginModel user)
         {
             var isValid = true;
-            if (!_emailValidator.CheckRule(loginModel.EmailAddress))
+            if (!_emailValidator.CheckRule(user.EmailAddress))
             {
                 ErrorMessage = "*Email invalid format.";
                 isValid = false;
             }
-            if (!_passwordValidator.CheckRule(loginModel.Password))
+            if (!_passwordValidator.CheckRule(user.Password))
             {
                 ErrorMessage += "*Password invalid format. It must contains 8 characters, at least one letter and one digit.";
                 isValid = false;
             }
             if (isValid)
-                return Ok(loginModel);
+                return Ok(user);
             else
                 return BadRequest(ErrorMessage);
         }
@@ -51,9 +51,9 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("forgot")]
-        public IActionResult ForgotPassword([FromBody] ForgotPasswordModel forgotPasswordModel)
+        public IActionResult ForgotPassword([FromBody] User user)
         {
-            if (!_emailValidator.CheckRule(forgotPasswordModel.EmailAddress))
+            if (!_emailValidator.CheckRule(user.EmailAddress))
             {
                 ErrorMessage = "*Email invalid format.";
                 return BadRequest(ErrorMessage);
@@ -64,10 +64,10 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("create")]
-        public IActionResult CreateAccount([FromBody] CreateAccountModel createAccountModel)
+        public IActionResult CreateAccount([FromBody] User user)
         {
-            if (string.IsNullOrWhiteSpace(createAccountModel.FirstName)|| string.IsNullOrWhiteSpace(createAccountModel.LastName)
-                || string.IsNullOrWhiteSpace(createAccountModel.EmailAddress)|| string.IsNullOrWhiteSpace(createAccountModel.Password))
+            if (string.IsNullOrWhiteSpace(user.FirstName)|| string.IsNullOrWhiteSpace(user.LastName)
+                || string.IsNullOrWhiteSpace(user.EmailAddress)|| string.IsNullOrWhiteSpace(user.PasswordHash))
             {
                 ErrorMessage = "*Please fill all required fields.";
                 return BadRequest(ErrorMessage);

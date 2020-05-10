@@ -1,8 +1,10 @@
+using Backend_Dis_App.Database;
 using Backend_Dis_App.Services.Implementation;
 using Backend_Dis_App.Services.Interfaces;
 using Backend_Dis_App.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +24,8 @@ namespace Backend_Dis_App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration["ConnectionStrings:PostreSQL"];
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllHeaders",
@@ -39,6 +43,11 @@ namespace Backend_Dis_App
                     Title = "TaxApp API",
                     Version = "v1"
                 });
+            });
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<TaxAppContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
             });
 
             services.AddSingleton<IUserService, UserService>();

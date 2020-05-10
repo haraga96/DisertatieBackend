@@ -13,6 +13,7 @@
     <Folder Include="Models\" />
     <Folder Include="BaseClasses\" />
     <Folder Include="Validators\" />
+    <Folder Include="Database\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />

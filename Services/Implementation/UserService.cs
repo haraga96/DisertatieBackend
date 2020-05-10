@@ -9,7 +9,7 @@ namespace Backend_Dis_App.Services.Implementation
         {
         }
 
-        public void CreateAccount(CreateAccountModel newAccountModel)
+        public void CreateAccount(User user)
         {
             
         }
