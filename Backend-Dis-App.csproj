@@ -14,6 +14,7 @@
     <Folder Include="BaseClasses\" />
     <Folder Include="Validators\" />
     <Folder Include="Database\" />
+    <Folder Include="Database\Context\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
