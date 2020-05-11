@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Backend_Dis_App.BaseClasses;
 using Backend_Dis_App.Database;
 using Backend_Dis_App.Models;
@@ -60,7 +61,58 @@ namespace Backend_Dis_App.Controllers
                 ErrorMessage = "*Email invalid format.";
                 return BadRequest(ErrorMessage);
             }
-            return Ok("Email has been sent");
+            try
+            {
+                _userService.ForgotPassword(user.EmailAddress);
+                return Ok("Email has been sent");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }   
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("reset")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordModel user)
+        {
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.OldPassword) ||
+                string.IsNullOrWhiteSpace(user.NewPassword) || string.IsNullOrWhiteSpace(user.ConfirmNewPassword))
+            {
+                ErrorMessage = "*Please fill all required fields.";
+                return BadRequest(ErrorMessage);
+            }
+            if (!_emailValidator.CheckRule(user.EmailAddress))
+            {
+                ErrorMessage = "*Email invalid format.";
+                return BadRequest(ErrorMessage);
+            }
+            if (!_passwordValidator.CheckRule(user.NewPassword))
+            {
+                ErrorMessage += "*Password invalid format. It must contains 8 characters, at least one letter and one digit.";
+                isValid = false;
+            }
+            if (!user.NewPassword.Equals(user.ConfirmNewPassword))
+            {
+                ErrorMessage += "*Password mismatch.";
+                isValid = false;
+            }
+            try
+            {
+                if (isValid)
+                {
+                    _userService.ResetPassword(user);
+                    return Ok("Password has been changed.");
+                }
+                else
+                    return BadRequest(ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [AllowAnonymous]

@@ -50,6 +50,8 @@ namespace Backend_Dis_App
                 options.UseNpgsql(connectionString);
             });
 
+            services.AddScoped<TaxAppContext, TaxAppContext>();
+            services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IEmailValidator, EmailValidator>();
             services.AddSingleton<IPasswordValidator, PasswordValidator>();

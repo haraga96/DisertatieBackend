@@ -1,4 +1,5 @@
-﻿using Backend_Dis_App.Database;
+﻿using System.Threading.Tasks;
+using Backend_Dis_App.Database;
 using Backend_Dis_App.Models;
 
 namespace Backend_Dis_App.Services.Interfaces
@@ -8,6 +9,7 @@ namespace Backend_Dis_App.Services.Interfaces
         bool Login(LoginModel loginModel);
         void CreateAccount(User user);
         bool LogOut();
-        void ForgotPassword(long id);
+        void ForgotPassword(string emailAddress);
+        void ResetPassword(ResetPasswordModel resetPasswordModel);
     }
 }
