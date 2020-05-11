@@ -32,38 +32,33 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public IActionResult LoginIntoAccount([FromBody] LoginModel user)
+        public async Task<IActionResult> LoginIntoAccount([FromBody] LoginModel user)
         {
-            var isValid = true;
-            if (!_emailValidator.CheckRule(user.EmailAddress))
+            if (string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.Password))
             {
-                ErrorMessage = "*Email invalid format.";
-                isValid = false;
-            }
-            if (!_passwordValidator.CheckRule(user.Password))
-            {
-                ErrorMessage += "*Password invalid format. It must contains 8 characters, at least one letter and one digit.";
-                isValid = false;
-            }
-            if (isValid)
-                return Ok(user);
-            else
+                ErrorMessage = "Please fill all required fields.";
                 return BadRequest(ErrorMessage);
+            }
+            var token = await _userService.LoginAsync(user);
+            if (token)
+                return Ok(token);
+            else
+                return BadRequest("Invalid credentials. Try again");
         }
 
         [AllowAnonymous]
         [HttpPost]
         [Route("forgot")]
-        public IActionResult ForgotPassword([FromBody] User user)
+        public async Task<IActionResult> ForgotPassword([FromBody] User user)
         {
             if (!_emailValidator.CheckRule(user.EmailAddress))
             {
-                ErrorMessage = "*Email invalid format.";
+                ErrorMessage = "Email invalid format.";
                 return BadRequest(ErrorMessage);
             }
             try
             {
-                _userService.ForgotPassword(user.EmailAddress);
+                await _userService.ForgotPasswordAsync(user.EmailAddress);
                 return Ok("Email has been sent");
             }
             catch(Exception ex)
@@ -75,18 +70,18 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("reset")]
-        public IActionResult ResetPassword([FromBody] ResetPasswordModel user)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel user)
         {
             bool isValid = true;
             if (string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.OldPassword) ||
                 string.IsNullOrWhiteSpace(user.NewPassword) || string.IsNullOrWhiteSpace(user.ConfirmNewPassword))
             {
-                ErrorMessage = "*Please fill all required fields.";
+                ErrorMessage = "Please fill all required fields.";
                 return BadRequest(ErrorMessage);
             }
             if (!_emailValidator.CheckRule(user.EmailAddress))
             {
-                ErrorMessage = "*Email invalid format.";
+                ErrorMessage = "Email invalid format.";
                 return BadRequest(ErrorMessage);
             }
             if (!_passwordValidator.CheckRule(user.NewPassword))
@@ -103,7 +98,7 @@ namespace Backend_Dis_App.Controllers
             {
                 if (isValid)
                 {
-                    _userService.ResetPassword(user);
+                    await _userService.ResetPasswordAsync(user);
                     return Ok("Password has been changed.");
                 }
                 else
@@ -118,20 +113,20 @@ namespace Backend_Dis_App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("create")]
-        public IActionResult CreateAccount([FromBody] CreateAccountModel user)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountModel user)
         {
             bool isValid = true;
             if (string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName) ||
                 string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.Password) ||
                 string.IsNullOrWhiteSpace(user.ConfirmPassword))
             {
-                ErrorMessage = "*Please fill all required fields.";
+                ErrorMessage = "Please fill all required fields.";
                 return BadRequest(ErrorMessage);
             }
 
             if (!_emailValidator.CheckRule(user.EmailAddress))
             {
-                ErrorMessage += "*Email invalid format.";
+                ErrorMessage += "Email invalid format.";
                 isValid = false;
             }
 
@@ -160,7 +155,7 @@ namespace Backend_Dis_App.Controllers
                     PasswordHash = user.Password,
                     PasswordSalt = user.ConfirmPassword
                 };
-                _userService.CreateAccount(newUser);
+                await _userService.CreateAccountAsync(newUser);
             }
             catch(Exception ex)
             {

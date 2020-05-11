@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Backend_Dis_App.Database;
 using Backend_Dis_App.Models;
 using Backend_Dis_App.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend_Dis_App.Services.Implementation
 {
@@ -18,18 +19,18 @@ namespace Backend_Dis_App.Services.Implementation
             _emailService = emailService;
         }
 
-        public void CreateAccount(User user)
+        public async Task CreateAccountAsync(User user)
         {
-            _db.User.Add(user);
-            _db.SaveChanges();
+            await _db.User.AddAsync(user);
+            await _db.SaveChangesAsync();
         }
 
-        public void ForgotPassword(string emailAddress)
+        public async Task ForgotPasswordAsync(string emailAddress)
         {
-            var user = _db.User.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
+            var user = await _db.User.FirstOrDefaultAsync(x => x.EmailAddress.Equals(emailAddress));
             if (user != null)
             {
-                _emailService.SendEmail(emailAddress, "Forgot password");
+                await _emailService.SendEmailAsync(emailAddress, "Forgot password");
             }
             else
             {
@@ -37,27 +38,28 @@ namespace Backend_Dis_App.Services.Implementation
             }
         }
 
-        public bool Login(LoginModel loginModel)
+        public async Task<bool> LoginAsync(LoginModel loginModel)
         {
-            if (!string.IsNullOrWhiteSpace(loginModel.EmailAddress) || !string.IsNullOrWhiteSpace(loginModel.Password))
+            var user = await _db.User.FirstOrDefaultAsync(x => x.EmailAddress.Equals(loginModel.EmailAddress) && x.PasswordHash.Equals(loginModel.Password));
+            if (user != null)
                 return true;
             return false;
         }
 
-        public bool LogOut()
+        public async Task<bool> LogOutAsync()
         {
             return true;
         }
 
-        public void ResetPassword(ResetPasswordModel resetPasswordModel)
+        public async Task ResetPasswordAsync(ResetPasswordModel resetPasswordModel)
         {
-            var user = _db.User.FirstOrDefault(x => x.EmailAddress.Equals(resetPasswordModel.EmailAddress));
+            var user = await _db.User.FirstOrDefaultAsync(x => x.EmailAddress.Equals(resetPasswordModel.EmailAddress));
             if (user != null)
             {
                 if (user.PasswordHash.Equals(resetPasswordModel.OldPassword))
                 {
                     user.PasswordHash = resetPasswordModel.NewPassword;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
                 else
                     throw new Exception(string.Format("Old password is wrong."));

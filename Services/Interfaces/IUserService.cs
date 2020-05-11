@@ -6,10 +6,10 @@ namespace Backend_Dis_App.Services.Interfaces
 {
     public interface IUserService
     {
-        bool Login(LoginModel loginModel);
-        void CreateAccount(User user);
-        bool LogOut();
-        void ForgotPassword(string emailAddress);
-        void ResetPassword(ResetPasswordModel resetPasswordModel);
+        Task<bool> LoginAsync(LoginModel loginModel);
+        Task CreateAccountAsync(User user);
+        Task<bool> LogOutAsync();
+        Task ForgotPasswordAsync(string emailAddress);
+        Task ResetPasswordAsync(ResetPasswordModel resetPasswordModel);
     }
 }

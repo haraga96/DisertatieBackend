@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Backend_Dis_App.Services.Interfaces;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,7 @@ namespace Backend_Dis_App.Services.Implementation
             _configuration = configuration;
         }
 
-        public void SendEmail(string toPerson, string subject)
+        public async Task SendEmailAsync(string toPerson, string subject)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("Tax App", _configuration["ResetPassword:From"]));
@@ -30,17 +29,11 @@ namespace Backend_Dis_App.Services.Implementation
 
             using (var client = new SmtpClient())
             {
-
-                client.Connect("smtp.gmail.com", 587, false);
-
-                // Note: only needed if the SMTP server requires authentication
-                client.Authenticate(_configuration["Gmail:Username"], _configuration["Gmail:Password"]);
-
-                client.Send(message);
-                client.Disconnect(true);
-
+                await client.ConnectAsync("smtp.gmail.com", 587, false);
+                await client.AuthenticateAsync(_configuration["Gmail:Username"], _configuration["Gmail:Password"]);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
-
         }
     }
 }
