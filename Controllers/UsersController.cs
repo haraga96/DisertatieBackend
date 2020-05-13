@@ -18,15 +18,19 @@ namespace Backend_Dis_App.Controllers
         private readonly IUserService _userService;
         private readonly IEmailValidator _emailValidator;
         private readonly IPasswordValidator _passwordValidator;
+        private readonly ISecurePassword _securePassword;
         
-
         private string ErrorMessage { get; set; }
 
-        public UsersController(IUserService userService, IEmailValidator emailValidator, IPasswordValidator passwordValidator, TaxAppContext db)
+        public UsersController(IUserService userService,
+            IEmailValidator emailValidator,
+            IPasswordValidator passwordValidator,
+            ISecurePassword securePassword)
         {
             _userService = userService;
             _emailValidator = emailValidator;
             _passwordValidator = passwordValidator;
+            _securePassword = securePassword;
         }
 
         [AllowAnonymous]
@@ -73,8 +77,10 @@ namespace Backend_Dis_App.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel user)
         {
             bool isValid = true;
-            if (string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.OldPassword) ||
-                string.IsNullOrWhiteSpace(user.NewPassword) || string.IsNullOrWhiteSpace(user.ConfirmNewPassword))
+            if (string.IsNullOrWhiteSpace(user.EmailAddress) ||
+                string.IsNullOrWhiteSpace(user.OldPassword) ||
+                string.IsNullOrWhiteSpace(user.NewPassword) ||
+                string.IsNullOrWhiteSpace(user.ConfirmNewPassword))
             {
                 ErrorMessage = "Please fill all required fields.";
                 return BadRequest(ErrorMessage);
@@ -86,7 +92,8 @@ namespace Backend_Dis_App.Controllers
             }
             if (!_passwordValidator.CheckRule(user.NewPassword))
             {
-                ErrorMessage += "*Password invalid format. It must contains 8 characters, at least one letter and one digit.";
+                ErrorMessage += "*Password invalid format." +
+                    " It must contains 8 characters, at least one letter and one digit.";
                 isValid = false;
             }
             if (!user.NewPassword.Equals(user.ConfirmNewPassword))
@@ -116,8 +123,10 @@ namespace Backend_Dis_App.Controllers
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountModel user)
         {
             bool isValid = true;
-            if (string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName) ||
-                string.IsNullOrWhiteSpace(user.EmailAddress) || string.IsNullOrWhiteSpace(user.Password) ||
+            if (string.IsNullOrWhiteSpace(user.FirstName) ||
+                string.IsNullOrWhiteSpace(user.LastName) ||
+                string.IsNullOrWhiteSpace(user.EmailAddress) ||
+                string.IsNullOrWhiteSpace(user.Password) ||
                 string.IsNullOrWhiteSpace(user.ConfirmPassword))
             {
                 ErrorMessage = "Please fill all required fields.";
@@ -132,7 +141,8 @@ namespace Backend_Dis_App.Controllers
 
             if (!_passwordValidator.CheckRule(user.Password))
             {
-                ErrorMessage += "*Password invalid format. It must contains 8 characters, at least one letter and one digit.";
+                ErrorMessage += "*Password invalid format." +
+                    " It must contains 8 characters, at least one letter and one digit.";
                 isValid = false;
             }
 
@@ -145,15 +155,17 @@ namespace Backend_Dis_App.Controllers
             if (!isValid)
                 return BadRequest(ErrorMessage);
 
+            var (passwordHash256, salt) = _securePassword.EncryptPassword(user.Password);
+
             try
             {
-                var newUser = new User
+                var newUser = new User()
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     EmailAddress = user.EmailAddress,
-                    PasswordHash = user.Password,
-                    PasswordSalt = user.ConfirmPassword
+                    PasswordHash = Convert.ToBase64String(passwordHash256),
+                    PasswordSalt = Convert.ToBase64String(salt)
                 };
                 await _userService.CreateAccountAsync(newUser);
             }

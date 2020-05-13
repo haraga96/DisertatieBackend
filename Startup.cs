@@ -2,12 +2,14 @@ using Backend_Dis_App.Database;
 using Backend_Dis_App.Services.Implementation;
 using Backend_Dis_App.Services.Interfaces;
 using Backend_Dis_App.Validators;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Backend_Dis_App
@@ -25,6 +27,7 @@ namespace Backend_Dis_App
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["ConnectionStrings:PostreSQL"];
+            var tokenKey = Configuration["Token:Key"];
 
             services.AddCors(options =>
             {
@@ -50,11 +53,30 @@ namespace Backend_Dis_App
                 options.UseNpgsql(connectionString);
             });
 
-            services.AddScoped<TaxAppContext, TaxAppContext>();
+            services.AddSingleton<ICountryService, CountryService>();
             services.AddSingleton<IEmailService, EmailService>();
+            services.AddSingleton<ISecurePassword, SecurePassword>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IEmailValidator, EmailValidator>();
             services.AddSingleton<IPasswordValidator, PasswordValidator>();
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(new byte[8]),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddControllers();
         }
