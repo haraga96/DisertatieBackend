@@ -15,6 +15,7 @@
     <Folder Include="Validators\" />
     <Folder Include="Database\" />
     <Folder Include="Database\Context\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />

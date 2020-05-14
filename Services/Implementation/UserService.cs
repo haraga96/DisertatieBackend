@@ -5,6 +5,7 @@ using Backend_Dis_App.Database;
 using Backend_Dis_App.Models;
 using Backend_Dis_App.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Backend_Dis_App.Services.Implementation
 {
@@ -13,12 +14,14 @@ namespace Backend_Dis_App.Services.Implementation
         private readonly TaxAppContext _db;
         private readonly IEmailService _emailService;
         private readonly ISecurePassword _securePassword;
+        private readonly IMemoryCache _memoryCache;
 
-        public UserService(IEmailService emailService, ISecurePassword securePassword)
+        public UserService(IEmailService emailService, ISecurePassword securePassword, IMemoryCache memoryCache)
         {
             _db = new TaxAppContext();
             _emailService = emailService;
             _securePassword = securePassword;
+            _memoryCache = memoryCache;
         }
 
         public async Task CreateAccountAsync(User user)
@@ -63,9 +66,17 @@ namespace Backend_Dis_App.Services.Implementation
                 return false;
         }
 
-        public async Task<bool> LogOutAsync()
+        public bool LogOut()
         {
-            return true;
+            try
+            {
+                _memoryCache.Remove("Login_Info");
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
         }
 
         public async Task ResetPasswordAsync(ResetPasswordModel resetPasswordModel)

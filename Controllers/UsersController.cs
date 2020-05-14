@@ -1,12 +1,19 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Backend_Dis_App.BaseClasses;
-using Backend_Dis_App.Database;
 using Backend_Dis_App.Models;
 using Backend_Dis_App.Services.Interfaces;
 using Backend_Dis_App.Validators;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Backend_Dis_App.Controllers
 {
@@ -19,18 +26,34 @@ namespace Backend_Dis_App.Controllers
         private readonly IEmailValidator _emailValidator;
         private readonly IPasswordValidator _passwordValidator;
         private readonly ISecurePassword _securePassword;
-        
+        private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _memoryCache;
         private string ErrorMessage { get; set; }
 
-        public UsersController(IUserService userService,
+        public UsersController(IConfiguration configuration,
+            IUserService userService,
             IEmailValidator emailValidator,
             IPasswordValidator passwordValidator,
-            ISecurePassword securePassword)
+            ISecurePassword securePassword,
+            IMemoryCache memoryCache)
         {
             _userService = userService;
             _emailValidator = emailValidator;
             _passwordValidator = passwordValidator;
             _securePassword = securePassword;
+            _configuration = configuration;
+            _memoryCache = memoryCache;
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("checkstatus")]
+        public IActionResult CheckStatus()
+        {
+            var tokenValue = _memoryCache.Get("Login_Info")?.ToString();
+            if (!string.IsNullOrWhiteSpace(tokenValue))
+                return Ok(tokenValue);
+            return NoContent();
         }
 
         [AllowAnonymous]
@@ -43,11 +66,29 @@ namespace Backend_Dis_App.Controllers
                 ErrorMessage = "Please fill all required fields.";
                 return BadRequest(ErrorMessage);
             }
-            var token = await _userService.LoginAsync(user);
-            if (token)
-                return Ok(token);
+            var isOk = await _userService.LoginAsync(user);
+            if (isOk)
+            {
+                var tokenKey = Encoding.ASCII.GetBytes(_configuration["Token:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                                {
+                                    new Claim(ClaimTypes.Name, user.EmailAddress),
+                                    new Claim(ClaimTypes.Role, "Administrator")
+                                }),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var writenToken = tokenHandler.WriteToken(token);
+                var options = new MemoryCacheEntryOptions().SetSize(1).SetAbsoluteExpiration(DateTime.Now.AddDays(7));
+                _memoryCache.Set("Login_Info", writenToken, options);
+                return Ok(writenToken);
+            }
             else
-                return BadRequest("Invalid credentials. Try again");
+                return Unauthorized("Invalid credentials. Try again");
         }
 
         [AllowAnonymous]
@@ -65,10 +106,22 @@ namespace Backend_Dis_App.Controllers
                 await _userService.ForgotPasswordAsync(user.EmailAddress);
                 return Ok("Email has been sent");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }   
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("logout")]
+        public IActionResult LogOut()
+        {
+            var isLoggedOut = _userService.LogOut();
+            if (isLoggedOut)
+                return Ok();
+            else
+                return BadRequest("Something went wrong");
         }
 
         [AllowAnonymous]
@@ -169,11 +222,11 @@ namespace Backend_Dis_App.Controllers
                 };
                 await _userService.CreateAccountAsync(newUser);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
                 return BadRequest(ErrorMessage);
-            }    
+            }
 
             return Ok("Account created.");
         }

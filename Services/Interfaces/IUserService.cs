@@ -8,7 +8,7 @@ namespace Backend_Dis_App.Services.Interfaces
     {
         Task<bool> LoginAsync(LoginModel loginModel);
         Task CreateAccountAsync(User user);
-        Task<bool> LogOutAsync();
+        bool LogOut();
         Task ForgotPasswordAsync(string emailAddress);
         Task ResetPasswordAsync(ResetPasswordModel resetPasswordModel);
     }

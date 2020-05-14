@@ -17,7 +17,7 @@ namespace Backend_Dis_App.Controllers
             _countryService = countryService;
         }
 
-        [AllowAnonymous]
+        
         [HttpGet]
         [Route("mainpage")]
         public async Task<IActionResult> GetCountries()
