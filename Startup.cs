@@ -7,9 +7,11 @@ using Backend_Dis_App.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -88,6 +90,7 @@ namespace Backend_Dis_App
                 options.UseNpgsql(connectionString);
             });
 
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ICountryService, CountryService>();
             services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<ISecurePassword, SecurePassword>();

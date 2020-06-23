@@ -74,7 +74,7 @@ namespace Backend_Dis_App.Controllers
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                                 {
-                                    new Claim(ClaimTypes.Name, user.EmailAddress),
+                                    new Claim(ClaimTypes.Email, user.EmailAddress),
                                     new Claim(ClaimTypes.Role, "Administrator")
                                 }),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)

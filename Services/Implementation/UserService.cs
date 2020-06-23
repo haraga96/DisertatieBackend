@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Backend_Dis_App.Database;
@@ -64,6 +66,16 @@ namespace Backend_Dis_App.Services.Implementation
             }
             else
                 return false;
+        }
+
+        public async Task<User> GetUserByEmail(string emailAddress)
+        {
+            return await _db.User.FirstOrDefaultAsync(x => x.EmailAddress.Equals(emailAddress));
+        }
+
+        public async Task<ICollection<Documents>> GetDocumentsByUserId(User user)
+        {
+            return await _db.Documents.Where(x => x.UserId == user.Id).ToListAsync();
         }
 
         public bool LogOut()
