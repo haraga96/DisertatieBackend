@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Backend_Dis_App.Models;
 
 namespace Backend_Dis_App.Services.Interfaces
@@ -12,6 +11,5 @@ namespace Backend_Dis_App.Services.Interfaces
         Task ForgotPasswordAsync(string emailAddress);
         Task ResetPasswordAsync(ResetPasswordModel resetPasswordModel);
         Task<User> GetUserByEmail(string emailAddress);
-        Task<ICollection<Documents>> GetDocumentsByUserId(User user);
     }
 }

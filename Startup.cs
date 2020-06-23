@@ -37,6 +37,11 @@ namespace Backend_Dis_App
                 o.SizeLimit = 2000;
             });
 
+            services.AddEntityFrameworkNpgsql().AddDbContext<TaxAppContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllHeaders",
@@ -85,15 +90,13 @@ namespace Backend_Dis_App
                 });
             });
 
-            services.AddEntityFrameworkNpgsql().AddDbContext<TaxAppContext>(options =>
-            {
-                options.UseNpgsql(connectionString);
-            });
+            
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ICountryService, CountryService>();
             services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<ISecurePassword, SecurePassword>();
+            services.AddSingleton<IDocumentsService, DocumentsService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IEmailValidator, EmailValidator>();
             services.AddSingleton<IPasswordValidator, PasswordValidator>();
@@ -123,13 +126,13 @@ namespace Backend_Dis_App
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
-
+            app.UseCors("AllowAllHeaders");
             app.UseSwagger();
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Weather API v1");
             });
 
-            app.UseCors("AllowAllHeaders");
+            
 
             app.UseAuthentication(); ;
             app.UseAuthorization();
