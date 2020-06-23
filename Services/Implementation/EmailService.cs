@@ -45,7 +45,7 @@ namespace Backend_Dis_App.Services.Implementation
 
             message.Body = new TextPart("plain")
             {
-                Text = string.Format("You have to pay {0} lei", sum)
+                Text = string.Format("You have to pay {0} lei.", sum)
             };
 
             using (var client = new SmtpClient())
